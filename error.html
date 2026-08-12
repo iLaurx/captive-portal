@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0c0a09">
+    <title>SpicyNet — Servicio en pausa</title>
+    <style>
+        :root {
+            --bg: #0c0a09;
+            --bg-elev: #161311;
+            --ink: #faf7f2;
+            --muted: #b7aea4;
+            --line: rgba(255, 237, 213, 0.12);
+            --spice: #ff6a2a;
+            --spice-2: #ff8a4c;
+            --spice-dim: rgba(255, 106, 42, 0.16);
+            --ok: #3dd68c;
+            --sms: #3b9eff;
+            --radius: 22px;
+            --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body { min-height: 100%; }
+
+        body {
+            font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .scene {
+            position: relative;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: grid;
+            place-items: center;
+            padding: 28px 18px 36px;
+        }
+
+        .glow,
+        .glow-2 {
+            position: absolute;
+            pointer-events: none;
+            filter: blur(70px);
+            opacity: 0.55;
+        }
+
+        .glow {
+            width: 340px;
+            height: 340px;
+            top: -120px;
+            right: -80px;
+            background: radial-gradient(circle, #ff6a2a 0%, transparent 70%);
+            animation: drift 12s ease-in-out infinite;
+        }
+
+        .glow-2 {
+            width: 280px;
+            height: 280px;
+            bottom: -90px;
+            left: -70px;
+            background: radial-gradient(circle, #7c2d12 0%, transparent 70%);
+            animation: drift 16s ease-in-out infinite reverse;
+        }
+
+        .grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 237, 213, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 237, 213, 0.035) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 75%);
+            pointer-events: none;
+        }
+
+        .shell {
+            position: relative;
+            width: min(440px, 100%);
+            animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            padding: 0 4px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 750;
+            letter-spacing: -0.04em;
+            font-size: 1.05rem;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 11px;
+            background: linear-gradient(145deg, #ff8a4c, #e24100);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 8px 20px rgba(255, 106, 42, 0.35);
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.72rem;
+            font-weight: 650;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #ffd7c2;
+            background: rgba(255, 106, 42, 0.12);
+            border: 1px solid rgba(255, 138, 76, 0.28);
+            padding: 6px 10px;
+            border-radius: 999px;
+        }
+
+        .chip i {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--spice);
+            box-shadow: 0 0 0 0 rgba(255, 106, 42, 0.7);
+            animation: pulse 1.8s infinite;
+        }
+
+        .card {
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 28%),
+                var(--bg-elev);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            padding: 28px 22px 22px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px);
+        }
+
+        .hero-art {
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 18px;
+            position: relative;
+        }
+
+        .ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 138, 76, 0.18);
+            animation: ping 2.8s ease-out infinite;
+        }
+
+        .ring:nth-child(2) { animation-delay: 0.9s; }
+        .ring:nth-child(3) { animation-delay: 1.8s; }
+
+        .hero-core {
+            position: absolute;
+            inset: 16px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #ffb089, #ff6a2a 45%, #9a2b00);
+            display: grid;
+            place-items: center;
+            box-shadow: 0 12px 30px rgba(255, 106, 42, 0.35);
+        }
+
+        h1 {
+            font-size: clamp(1.7rem, 6vw, 2.15rem);
+            line-height: 1.12;
+            letter-spacing: -0.045em;
+            text-align: center;
+            font-weight: 750;
+            margin-bottom: 10px;
+        }
+
+        .lead {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.98rem;
+            margin-bottom: 26px;
+        }
+
+        .steps {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 28px 1fr;
+            gap: 12px;
+            align-items: start;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .n {
+            width: 28px;
+            height: 28px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            font-size: 0.75rem;
+            font-weight: 750;
+            color: #fff;
+            background: var(--spice-dim);
+            border: 1px solid rgba(255, 138, 76, 0.25);
+        }
+
+        .pay {
+            background: #100e0c;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 22px;
+        }
+
+        .pay-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: linear-gradient(90deg, rgba(255, 106, 42, 0.14), transparent);
+            border-bottom: 1px dashed rgba(255, 237, 213, 0.12);
+        }
+
+        .pay-top span {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--spice-2);
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 237, 213, 0.06);
+        }
+
+        .row:last-child { border-bottom: 0; }
+
+        .label {
+            display: block;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #8a827a;
+            margin-bottom: 3px;
+        }
+
+        .value {
+            font-size: 0.98rem;
+            font-weight: 650;
+            letter-spacing: -0.02em;
+            word-break: break-all;
+        }
+
+        .clabe {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.04em;
+            font-size: 1.02rem;
+        }
+
+        .copy {
+            flex-shrink: 0;
+            border: 0;
+            cursor: pointer;
+            color: #fff;
+            background: var(--spice-dim);
+            border: 1px solid rgba(255, 138, 76, 0.28);
+            border-radius: 12px;
+            padding: 8px 11px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.02em;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        .copy:hover { background: rgba(255, 106, 42, 0.28); }
+        .copy:active { transform: scale(0.96); }
+        .copy.ok {
+            background: rgba(61, 214, 140, 0.18);
+            border-color: rgba(61, 214, 140, 0.4);
+            color: var(--ok);
+        }
+
+        .hint {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.92rem;
+            margin-bottom: 14px;
+        }
+
+        .actions { display: grid; gap: 10px; }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px 16px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 750;
+            font-size: 1rem;
+            letter-spacing: -0.02em;
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .btn:active { transform: scale(0.985); }
+
+        .btn-sms {
+            color: #081018;
+            background: linear-gradient(180deg, #6eb8ff, #2f8fff);
+            box-shadow: 0 10px 24px rgba(47, 143, 255, 0.28);
+        }
+
+        .btn-call {
+            color: #fff;
+            background: linear-gradient(180deg, #ff8a4c, #ff5716);
+            box-shadow: 0 10px 24px rgba(255, 87, 22, 0.28);
+        }
+
+        footer {
+            margin-top: 18px;
+            text-align: center;
+            color: #6f675f;
+            font-size: 0.78rem;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 28px;
+            transform: translateX(-50%) translateY(16px);
+            background: #1f1a17;
+            color: var(--ink);
+            border: 1px solid rgba(61, 214, 140, 0.35);
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 650;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.25s ease;
+            z-index: 10;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        @keyframes pulse {
+            70% { box-shadow: 0 0 0 8px transparent; }
+            100% { box-shadow: 0 0 0 0 transparent; }
+        }
+
+        @keyframes ping {
+            0% { transform: scale(0.72); opacity: 0.7; }
+            100% { transform: scale(1.18); opacity: 0; }
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-18px, 12px); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <div class="glow"></div>
+        <div class="glow-2"></div>
+        <div class="grid"></div>
+
+        <div class="shell">
+            <header>
+                <div class="brand">
+                    <div class="logo" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 18.5c.8 0 1.4-.6 1.4-1.3 0-1.2-1.4-1.8-1.4-2.7 0 .9-1.4 1.5-1.4 2.7 0 .7.6 1.3 1.4 1.3Z" fill="white"/>
+                            <path d="M8.2 14.2a6.2 6.2 0 0 1 7.6 0M6 11.4a9.2 9.2 0 0 1 12 0M4 8.7a12.2 12.2 0 0 1 16 0" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    SpicyNet
+                </div>
+                <div class="chip"><i></i> En pausa</div>
+            </header>
+
+            <main class="card">
+                <div class="hero-art" aria-hidden="true">
+                    <span class="ring"></span>
+                    <span class="ring"></span>
+                    <span class="ring"></span>
+                    <div class="hero-core">
+                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 3c2.2 3.2-.4 5.1-.4 7.2 0 1.4.9 2.4 2.1 3.2-2.6.2-4.7-1.5-4.7-4 0-2.4 1.2-4.4 3-6.4Z" fill="white" opacity=".9"/>
+                            <path d="M12.2 21c-3.4-2.2-5.7-5.2-5.7-8.4 0-2 1-3.7 2.2-5.1C7 9.4 6 11.6 6 13.6 6 17.4 8.8 20.2 12.2 21Z" fill="white" opacity=".55"/>
+                            <path d="M12 21c3.2-1.6 5.6-4.4 5.6-7.6 0-2.4-1.3-4.3-2.6-5.8.8 1.6 1.2 3.1 1.2 4.6 0 2.8-1.6 5.2-4.2 8.8Z" fill="white"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <h1>Tu internet está en pausa</h1>
+                <p class="lead">Regulariza tu pago y avísanos. En cuanto lo confirmemos, tu conexión vuelve a encenderse.</p>
+
+                <div class="steps">
+                    <div class="step"><span class="n">1</span><span>Transfiere a la CLABE con tu nombre como concepto.</span></div>
+                    <div class="step"><span class="n">2</span><span>Repórtalo por SMS o llamada para reactivar el servicio.</span></div>
+                </div>
+
+                <section class="pay" aria-label="Datos de pago">
+                    <div class="pay-top">
+                        <span>Transferencia</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <rect x="3" y="6" width="18" height="12" rx="2.5" stroke="#ff8a4c" stroke-width="1.6"/>
+                            <path d="M3 10h18" stroke="#ff8a4c" stroke-width="1.6"/>
+                        </svg>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <span class="label">Institución</span>
+                            <span class="value">Mercado Pago W</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <span class="label">CLABE</span>
+                            <span class="value clabe" id="clabe">722969020794505692</span>
+                        </div>
+                        <button class="copy" type="button" data-copy="722969020794505692">Copiar</button>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <span class="label">Concepto</span>
+                            <span class="value">Nombre del cliente</span>
+                        </div>
+                    </div>
+                </section>
+
+                <p class="hint">¿Ya pagaste? Repórtalo ahora:</p>
+
+                <div class="actions">
+                    <a class="btn btn-sms" href="sms:3343950458?body=Hola%20SpicyNet,%20ya%20realicé%20mi%20pago">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 6.5A2.5 2.5 0 0 1 7.5 4h9A2.5 2.5 0 0 1 19 6.5v7A2.5 2.5 0 0 1 16.5 16H9l-4 3.2V6.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        </svg>
+                        Enviar SMS de aviso
+                    </a>
+                    <a class="btn btn-call" href="tel:3343950458">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M7.2 3.8c.4-.4 1.1-.5 1.6-.2l2.2 1.4c.5.3.7.9.6 1.5l-.4 2.2a1.2 1.2 0 0 1-.7.9l-1.3.5a11.2 11.2 0 0 0 5.7 5.7l.5-1.3c.2-.4.6-.6.9-.7l2.2-.4c.6-.1 1.2.1 1.5.6l1.4 2.2c.3.5.2 1.2-.2 1.6l-1.3 1.3c-.5.5-1.2.7-1.9.6C11.4 19.3 4.7 12.6 4.3 6.9c-.1-.7.1-1.4.6-1.9L7.2 3.8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                        </svg>
+                        Llamar
+                    </a>
+                </div>
+            </main>
+
+            <footer>SpicyNet · Reactivación al confirmar tu pago</footer>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" role="status">CLABE copiada</div>
+
+    <script>
+        const toast = document.getElementById("toast");
+        let hide;
+
+        document.querySelectorAll("[data-copy]").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+                const text = btn.getAttribute("data-copy");
+                try {
+                    await navigator.clipboard.writeText(text);
+                } catch {
+                    const field = document.createElement("textarea");
+                    field.value = text;
+                    document.body.appendChild(field);
+                    field.select();
+                    document.execCommand("copy");
+                    field.remove();
+                }
+                btn.classList.add("ok");
+                btn.textContent = "Listo";
+                toast.classList.add("show");
+                clearTimeout(hide);
+                hide = setTimeout(() => {
+                    btn.classList.remove("ok");
+                    btn.textContent = "Copiar";
+                    toast.classList.remove("show");
+                }, 1800);
+            });
+        });
+    </script>
+</body>
+</html>
